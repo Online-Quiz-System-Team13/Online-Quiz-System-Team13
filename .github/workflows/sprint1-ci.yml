@@ -1,0 +1,33 @@
+
+name: Sprint 1 Complete Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run All Sprint 1 Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Test Quiz Submission and Scoring
+        run: node js/quiz.test.js
+
+      - name: Test Quiz Start and Question Display
+        run: node --test sprint1/FR-01-FR-02.test.js
+
+      - name: Test Answer Selection and Navigation
+        run: node --test sprint1/FR-03-FR-04.test.js
