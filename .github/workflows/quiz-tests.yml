@@ -1,0 +1,37 @@
+
+name: Quiz System Tests
+
+on:
+  push:
+    branches:
+      - feature/pratishta-sprint-1
+      - feature/pratishta-sprint-2
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Sprint Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Sprint 1 tests
+        if: github.head_ref == 'feature/pratishta-sprint-1' || github.ref == 'refs/heads/feature/pratishta-sprint-1'
+        run: node --test sprint1/FR-01-FR-02.test.js
+
+      - name: Run Sprint 2 validation tests
+        if: github.head_ref == 'feature/pratishta-sprint-2' || github.ref == 'refs/heads/feature/pratishta-sprint-2'
+        run: node --test sprint2/TEST-03-question-validation.test.js
+
+      - name: Run Sprint 2 performance tests
+        if: github.head_ref == 'feature/pratishta-sprint-2' || github.ref == 'refs/heads/feature/pratishta-sprint-2'
+        run: node --test sprint2/TEST-07-performance.test.js
