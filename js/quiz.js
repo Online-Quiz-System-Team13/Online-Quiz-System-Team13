@@ -1,5 +1,6 @@
-
 // FR-05: Submit Quiz
+// Input: questions array and selectedAnswers object (question ID -> selected option)
+// Output: submitted answers, unanswered question count, and submission status
 function submitQuiz(questions, selectedAnswers) {
     const unanswered = questions.filter(
         question => selectedAnswers[question.id] === undefined ||
@@ -15,6 +16,8 @@ function submitQuiz(questions, selectedAnswers) {
 }
 
 // FR-06: Calculate Score
+// Input: questions array and answers object
+// Output: total, correct, incorrect, unanswered counts, and final score
 function calculateScore(questions, answers) {
     let correct = 0;
     let incorrect = 0;
@@ -42,6 +45,8 @@ function calculateScore(questions, answers) {
 }
 
 // FR-07: Display Result
+// Input: calculated result object and HTML container
+// Output: displays the quiz result inside the container
 function displayResult(result, container) {
     container.textContent =
         "Quiz Result\n" +
