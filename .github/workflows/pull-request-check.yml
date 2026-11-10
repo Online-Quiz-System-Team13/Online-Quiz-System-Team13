@@ -1,0 +1,26 @@
+name: Pull Request Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Pull Request Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check FR-13 JavaScript
+        run: node --check sprint2/FR-13-view-questions.js
+
+      - name: Check TEST-06 file
+        run: test -f sprint2/TEST-06-usability.md
