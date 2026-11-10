@@ -43,6 +43,7 @@
         }
 
         button:focus-visible,
+        .button-link:focus-visible,
         input:focus-visible + span {
             outline: 3px solid #9db5ff;
             outline-offset: 3px;
@@ -122,6 +123,22 @@
             font-size: 1.05rem;
         }
 
+        .bank-message {
+            margin: 0 0 18px;
+            border: 1px solid #f4c8cc;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #8d2935;
+            background: #fff0f1;
+            line-height: 1.5;
+        }
+
+        .start-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
         .primary {
             color: #fff;
             background: #4058c8;
@@ -138,6 +155,22 @@
 
         .secondary:not(:disabled):hover {
             background: #e2e7f2;
+        }
+
+        .button-link {
+            display: inline-flex;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 0 18px;
+            font-weight: 650;
+            text-decoration: none;
+            transition: background-color 140ms ease, transform 140ms ease;
+        }
+
+        .button-link:hover {
+            transform: translateY(-1px);
         }
 
         .danger {
@@ -335,10 +368,16 @@
                 <p class="eyebrow">Sprint 1 · Participant quiz</p>
                 <h1 id="page-title">Ready for a quick quiz?</h1>
                 <p class="intro">
-                    Answer five questions, move between them at your own pace,
+                    Answer the questions, move between them at your own pace,
                     and see your score when you submit.
                 </p>
-                <button id="start-button" class="primary" type="button">Start quiz</button>
+                <p id="question-bank-message" class="bank-message hidden" role="alert"></p>
+                <div class="start-actions">
+                    <button id="start-button" class="primary" type="button">Start quiz</button>
+                    <a class="button-link secondary" href="./sprint2/admin.html">
+                        Administrator tools
+                    </a>
+                </div>
             </div>
 
             <div id="quiz-screen" class="card-content hidden">
@@ -375,7 +414,7 @@
                 </div>
             </div>
         </section>
-        <p class="footer">Online Quiz System · Sprint 1 demonstration</p>
+        <p class="footer">Online Quiz System · Sprint 1 quiz · Administrator tools</p>
     </main>
 
     <script src="./js/quiz.js"></script>
@@ -384,66 +423,9 @@
     <script src="./sprint1/FR-03-select-answer.js"></script>
     <script src="./sprint1/FR-04-navigate-questions.js"></script>
     <script src="./sprint1/FR-08-exit-quiz.js"></script>
+    <script src="./js/question-bank.js"></script>
     <script>
         "use strict";
-
-        const questions = [
-            {
-                id: 1,
-                text: "Which planet is known as the Red Planet?",
-                options: [
-                    { value: "A", label: "Venus" },
-                    { value: "B", label: "Mars" },
-                    { value: "C", label: "Jupiter" },
-                    { value: "D", label: "Mercury" }
-                ],
-                correctAnswer: "B"
-            },
-            {
-                id: 2,
-                text: "What is the capital city of Japan?",
-                options: [
-                    { value: "A", label: "Kyoto" },
-                    { value: "B", label: "Osaka" },
-                    { value: "C", label: "Tokyo" },
-                    { value: "D", label: "Sapporo" }
-                ],
-                correctAnswer: "C"
-            },
-            {
-                id: 3,
-                text: "Which language is primarily used to style web pages?",
-                options: [
-                    { value: "A", label: "CSS" },
-                    { value: "B", label: "SQL" },
-                    { value: "C", label: "Python" },
-                    { value: "D", label: "Java" }
-                ],
-                correctAnswer: "A"
-            },
-            {
-                id: 4,
-                text: "How many sides does a hexagon have?",
-                options: [
-                    { value: "A", label: "Five" },
-                    { value: "B", label: "Six" },
-                    { value: "C", label: "Seven" },
-                    { value: "D", label: "Eight" }
-                ],
-                correctAnswer: "B"
-            },
-            {
-                id: 5,
-                text: "Which ocean is the largest?",
-                options: [
-                    { value: "A", label: "Atlantic Ocean" },
-                    { value: "B", label: "Indian Ocean" },
-                    { value: "C", label: "Arctic Ocean" },
-                    { value: "D", label: "Pacific Ocean" }
-                ],
-                correctAnswer: "D"
-            }
-        ];
 
         const startScreen = document.getElementById("start-screen");
         const quizScreen = document.getElementById("quiz-screen");
@@ -453,6 +435,9 @@
         const progressTrack = document.querySelector(".progress-track");
         const progressValue = document.getElementById("progress-value");
         const resultSummary = document.getElementById("result-summary");
+        const startButton = document.getElementById("start-button");
+        const questionBankMessage = document.getElementById("question-bank-message");
+        let questions = [];
         let quizState;
 
         const quizModules = {
@@ -460,10 +445,28 @@
             navigation: QuizQuestionNavigation
         };
 
+        function loadQuestionBank() {
+            try {
+                questions = QuizQuestionBank.load(window.localStorage);
+                if (questions.length === 0) {
+                    throw new Error("There are no questions available. Ask an administrator to add questions.");
+                }
+                questionBankMessage.classList.add("hidden");
+                startButton.disabled = false;
+                return true;
+            } catch (error) {
+                questionBankMessage.textContent = "Unable to load quiz questions: " + error.message;
+                questionBankMessage.classList.remove("hidden");
+                startButton.disabled = true;
+                return false;
+            }
+        }
+
         function updateProgress(index) {
             questionCount.textContent =
                 "Question " + (index + 1) + " of " + quizState.questions.length;
             progressTrack.setAttribute("aria-valuenow", String(index + 1));
+            progressTrack.setAttribute("aria-valuemax", String(quizState.questions.length));
             progressValue.style.width =
                 ((index + 1) / quizState.questions.length * 100) + "%";
         }
@@ -479,6 +482,9 @@
         }
 
         function startQuiz() {
+            if (!loadQuestionBank()) {
+                return;
+            }
             quizState = QuizStart.startQuiz(questions);
             startScreen.classList.add("hidden");
             resultScreen.classList.add("hidden");
@@ -521,7 +527,8 @@
             document.getElementById("start-button").focus();
         }
 
-        document.getElementById("start-button").addEventListener("click", startQuiz);
+        loadQuestionBank();
+        startButton.addEventListener("click", startQuiz);
         document.getElementById("submit-button").addEventListener("click", handleSubmitQuiz);
         document.getElementById("restart-button").addEventListener("click", startQuiz);
         document.getElementById("result-exit-button").addEventListener("click", exitQuiz);

@@ -27,8 +27,10 @@ jobs:
         run: |
           node --check sprint2/admin-messages.js
           node --check sprint2/FR-09-admin-login.js
+          node --check sprint2/FR-10-add-question.js
           node --check sprint2/FR-11-edit-question.js
           node --check sprint2/FR-12-delete-question.js
+          node --check sprint2/FR-13-view-questions.js
 
-      - name: Run TEST-02 and TEST-05
-        run: node --test sprint2/TEST-02-admin-login-access.test.js sprint2/TEST-05-errors-messages.test.js
+      - name: Run administrator feature tests
+        run: node --test sprint2/FR-13-view-questions.test.js sprint2/TEST-02-admin-login-access.test.js sprint2/TEST-03-question-validation.test.js sprint2/TEST-05-errors-messages.test.js sprint2/TEST-06-usability.test.js
