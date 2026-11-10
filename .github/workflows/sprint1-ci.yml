@@ -31,3 +31,6 @@ jobs:
 
       - name: Test Answer Selection and Navigation
         run: node --test sprint1/FR-03-FR-04.test.js
+
+      - name: Test Quiz Exit
+        run: node --test sprint1/FR-08-exit-quiz.test.js
