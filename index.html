@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <title>Online Quiz System | Team 13</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #172033;
+            background: #f5f7fb;
+            font-synthesis: none;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(ellipse at 50% 0, #e6edff 0, transparent 48%),
+                #f5f7fb;
+        }
+
+        button {
+            min-height: 44px;
+            border: 0;
+            border-radius: 10px;
+            padding: 0 18px;
+            font: inherit;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background-color 140ms ease, transform 140ms ease;
+        }
+
+        button:not(:disabled):hover {
+            transform: translateY(-1px);
+        }
+
+        button:focus-visible,
+        input:focus-visible + span {
+            outline: 3px solid #9db5ff;
+            outline-offset: 3px;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .page {
+            width: min(760px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 34px 0 48px;
+        }
+
+        .brand {
+            margin: 0 0 24px;
+            color: #59647a;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .card {
+            overflow: hidden;
+            border: 1px solid #e6eaf2;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 20px 55px rgb(34 51 84 / 9%);
+        }
+
+        .card-content {
+            padding: clamp(24px, 6vw, 48px);
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: #4b63d1;
+            font-size: 0.78rem;
+            font-weight: 750;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: clamp(2rem, 6vw, 3rem);
+            letter-spacing: -0.045em;
+            line-height: 1.08;
+        }
+
+        h2 {
+            margin-bottom: 12px;
+            font-size: clamp(1.35rem, 4vw, 1.8rem);
+            letter-spacing: -0.025em;
+            line-height: 1.3;
+        }
+
+        .intro,
+        .muted {
+            color: #657087;
+            line-height: 1.65;
+        }
+
+        .intro {
+            max-width: 540px;
+            margin-bottom: 28px;
+            font-size: 1.05rem;
+        }
+
+        .primary {
+            color: #fff;
+            background: #4058c8;
+        }
+
+        .primary:not(:disabled):hover {
+            background: #3048b7;
+        }
+
+        .secondary {
+            color: #34415c;
+            background: #edf0f7;
+        }
+
+        .secondary:not(:disabled):hover {
+            background: #e2e7f2;
+        }
+
+        .danger {
+            color: #9c3340;
+            background: #fff0f1;
+        }
+
+        .danger:not(:disabled):hover {
+            background: #ffe2e5;
+        }
+
+        #exit-container button {
+            color: #9c3340;
+            background: #fff0f1;
+        }
+
+        #exit-container button:not(:disabled):hover {
+            background: #ffe2e5;
+        }
+
+        .quiz-topline,
+        .quiz-actions,
+        .result-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .quiz-topline {
+            margin-bottom: 18px;
+        }
+
+        .question-count {
+            margin: 0;
+            color: #59647a;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .progress-track {
+            height: 7px;
+            margin-bottom: 32px;
+            overflow: hidden;
+            border-radius: 99px;
+            background: #edf0f7;
+        }
+
+        .progress-value {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: #536be0;
+            transition: width 180ms ease;
+        }
+
+        #question-container > p {
+            margin-bottom: 24px;
+            color: #657087;
+        }
+
+        fieldset {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            border: 0;
+            padding: 0;
+        }
+
+        legend {
+            margin-bottom: 12px;
+            color: #657087;
+            font-size: 0.9rem;
+        }
+
+        fieldset label {
+            display: flex;
+            min-height: 54px;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #e3e7f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #27334a;
+            cursor: pointer;
+            transition: border-color 140ms ease, background-color 140ms ease;
+        }
+
+        fieldset label:has(input:checked) {
+            border-color: #687de0;
+            background: #f2f4ff;
+        }
+
+        fieldset input {
+            width: 17px;
+            height: 17px;
+            margin: 0;
+            accent-color: #4058c8;
+        }
+
+        #navigation-container {
+            margin: 26px 0;
+        }
+
+        #navigation-container nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #navigation-container button {
+            min-width: 44px;
+            padding: 0 12px;
+            color: #34415c;
+            background: #edf0f7;
+        }
+
+        #navigation-container button[aria-current="step"] {
+            color: #fff;
+            background: #4058c8;
+        }
+
+        #navigation-container button.is-answered:not([aria-current="step"]) {
+            box-shadow: inset 0 0 0 2px #8ac5a0;
+        }
+
+        .quiz-actions {
+            flex-wrap: wrap;
+            border-top: 1px solid #edf0f5;
+            padding-top: 20px;
+        }
+
+        .quiz-actions > div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #result-screen h2 {
+            margin-bottom: 24px;
+        }
+
+        #result-summary {
+            margin: 0 0 26px;
+            border-radius: 14px;
+            padding: 20px;
+            color: #26334b;
+            background: #f4f6fb;
+            font: 600 1rem/1.9 "Segoe UI", Arial, sans-serif;
+            white-space: pre-line;
+        }
+
+        .result-actions {
+            flex-wrap: wrap;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            margin: 18px 0 0;
+            color: #7a8497;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            .page {
+                padding-top: 24px;
+            }
+
+            .quiz-topline,
+            .quiz-actions,
+            .result-actions {
+                align-items: stretch;
+            }
+
+            .quiz-actions > button,
+            .quiz-actions > div,
+            .quiz-actions > div button,
+            .result-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <p class="brand">Team 13 · Software Engineering</p>
+        <section class="card" aria-labelledby="page-title">
+            <div id="start-screen" class="card-content">
+                <p class="eyebrow">Sprint 1 · Participant quiz</p>
+                <h1 id="page-title">Ready for a quick quiz?</h1>
+                <p class="intro">
+                    Answer five questions, move between them at your own pace,
+                    and see your score when you submit.
+                </p>
+                <button id="start-button" class="primary" type="button">Start quiz</button>
+            </div>
+
+            <div id="quiz-screen" class="card-content hidden">
+                <div class="quiz-topline">
+                    <p class="eyebrow" style="margin: 0">General knowledge</p>
+                    <p id="question-count" class="question-count" aria-live="polite"></p>
+                </div>
+                <div
+                    class="progress-track"
+                    role="progressbar"
+                    aria-label="Quiz progress"
+                    aria-valuemin="1"
+                    aria-valuemax="5"
+                    aria-valuenow="1"
+                >
+                    <div id="progress-value" class="progress-value"></div>
+                </div>
+                <div id="question-container" aria-live="polite"></div>
+                <div class="quiz-actions">
+                    <div id="exit-container"></div>
+                    <div>
+                        <button id="submit-button" class="primary" type="button">Submit quiz</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-screen" class="card-content hidden" aria-live="polite">
+                <p class="eyebrow">Quiz complete</p>
+                <h2>Your result</h2>
+                <p id="result-summary"></p>
+                <div class="result-actions">
+                    <button id="restart-button" class="primary" type="button">Try again</button>
+                    <button id="result-exit-button" class="secondary" type="button">Exit quiz</button>
+                </div>
+            </div>
+        </section>
+        <p class="footer">Online Quiz System · Sprint 1 demonstration</p>
+    </main>
+
+    <script src="./js/quiz.js"></script>
+    <script src="./sprint1/FR-01-start-quiz.js"></script>
+    <script src="./sprint1/FR-02-display-questions.js"></script>
+    <script src="./sprint1/FR-03-select-answer.js"></script>
+    <script src="./sprint1/FR-04-navigate-questions.js"></script>
+    <script src="./sprint1/FR-08-exit-quiz.js"></script>
+    <script>
+        "use strict";
+
+        const questions = [
+            {
+                id: 1,
+                text: "Which planet is known as the Red Planet?",
+                options: [
+                    { value: "A", label: "Venus" },
+                    { value: "B", label: "Mars" },
+                    { value: "C", label: "Jupiter" },
+                    { value: "D", label: "Mercury" }
+                ],
+                correctAnswer: "B"
+            },
+            {
+                id: 2,
+                text: "What is the capital city of Japan?",
+                options: [
+                    { value: "A", label: "Kyoto" },
+                    { value: "B", label: "Osaka" },
+                    { value: "C", label: "Tokyo" },
+                    { value: "D", label: "Sapporo" }
+                ],
+                correctAnswer: "C"
+            },
+            {
+                id: 3,
+                text: "Which language is primarily used to style web pages?",
+                options: [
+                    { value: "A", label: "CSS" },
+                    { value: "B", label: "SQL" },
+                    { value: "C", label: "Python" },
+                    { value: "D", label: "Java" }
+                ],
+                correctAnswer: "A"
+            },
+            {
+                id: 4,
+                text: "How many sides does a hexagon have?",
+                options: [
+                    { value: "A", label: "Five" },
+                    { value: "B", label: "Six" },
+                    { value: "C", label: "Seven" },
+                    { value: "D", label: "Eight" }
+                ],
+                correctAnswer: "B"
+            },
+            {
+                id: 5,
+                text: "Which ocean is the largest?",
+                options: [
+                    { value: "A", label: "Atlantic Ocean" },
+                    { value: "B", label: "Indian Ocean" },
+                    { value: "C", label: "Arctic Ocean" },
+                    { value: "D", label: "Pacific Ocean" }
+                ],
+                correctAnswer: "D"
+            }
+        ];
+
+        const startScreen = document.getElementById("start-screen");
+        const quizScreen = document.getElementById("quiz-screen");
+        const resultScreen = document.getElementById("result-screen");
+        const questionContainer = document.getElementById("question-container");
+        const questionCount = document.getElementById("question-count");
+        const progressTrack = document.querySelector(".progress-track");
+        const progressValue = document.getElementById("progress-value");
+        const resultSummary = document.getElementById("result-summary");
+        let quizState;
+
+        const quizModules = {
+            answerSelection: QuizAnswerSelection,
+            navigation: QuizQuestionNavigation
+        };
+
+        function updateProgress(index) {
+            questionCount.textContent =
+                "Question " + (index + 1) + " of " + quizState.questions.length;
+            progressTrack.setAttribute("aria-valuenow", String(index + 1));
+            progressValue.style.width =
+                ((index + 1) / quizState.questions.length * 100) + "%";
+        }
+
+        function showQuestion() {
+            updateProgress(quizState.currentIndex);
+            QuizDisplay.displayQuestion(
+                questionContainer,
+                quizState,
+                quizModules,
+                updateProgress
+            );
+        }
+
+        function startQuiz() {
+            quizState = QuizStart.startQuiz(questions);
+            startScreen.classList.add("hidden");
+            resultScreen.classList.add("hidden");
+            quizScreen.classList.remove("hidden");
+            showQuestion();
+        }
+
+        function handleSubmitQuiz() {
+            const submission = window.submitQuiz(
+                quizState.questions,
+                quizState.selectedAnswers
+            );
+
+            if (submission.unansweredCount > 0) {
+                const shouldSubmit = window.confirm(
+                    "You have " + submission.unansweredCount +
+                    " unanswered question(s). Submit anyway?"
+                );
+                if (!shouldSubmit) {
+                    return;
+                }
+            }
+
+            quizState.isSubmitted = submission.isSubmitted;
+            const result = window.calculateScore(
+                quizState.questions,
+                submission.answers
+            );
+            window.displayResult(result, resultSummary);
+            quizScreen.classList.add("hidden");
+            resultScreen.classList.remove("hidden");
+            document.getElementById("restart-button").focus();
+        }
+
+        function exitQuiz() {
+            quizState = undefined;
+            quizScreen.classList.add("hidden");
+            resultScreen.classList.add("hidden");
+            startScreen.classList.remove("hidden");
+            document.getElementById("start-button").focus();
+        }
+
+        document.getElementById("start-button").addEventListener("click", startQuiz);
+        document.getElementById("submit-button").addEventListener("click", handleSubmitQuiz);
+        document.getElementById("restart-button").addEventListener("click", startQuiz);
+        document.getElementById("result-exit-button").addEventListener("click", exitQuiz);
+        questionContainer.addEventListener("change", function (event) {
+            if (event.target && event.target.matches("input[type='radio']")) {
+                showQuestion();
+            }
+        });
+        QuizExit.renderExitButton(
+            document.getElementById("exit-container"),
+            {},
+            exitQuiz
+        );
+    </script>
+</body>
+</html>
