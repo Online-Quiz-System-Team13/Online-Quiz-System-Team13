@@ -1,10 +1,10 @@
-
 name: Push Tests
 
 on:
   push:
     branches:
       - feature/sprint-1-srishti
+      - feature/sprint-2-srishti
 
 jobs:
   test:
@@ -19,6 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Check FR-13 JavaScript
+        run: node --check sprint2/FR-13-view-questions.js
+
+      - name: Check TEST-06 file
+        run: test -f sprint2/TEST-06-usability.md
 
       - name: Run Sprint 1 tests
         run: node --test sprint1/FR-03-FR-04.test.js
