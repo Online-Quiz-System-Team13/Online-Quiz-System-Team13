@@ -30,4 +30,4 @@ This is a manual usability test for the participant quiz controls and admin ques
 - Usability issues observed:
 - Follow-up changes:
 
-Do not mark this test complete until a person has performed the tasks and the results have been recorded.
+
