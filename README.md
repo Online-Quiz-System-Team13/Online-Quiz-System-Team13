@@ -1,68 +1,64 @@
 # Online Quiz System — Team 13
 
-## Project Description
+A browser-based quiz demonstration built with HTML and JavaScript. The current Sprint 1 flow lets a participant start a quiz, answer and navigate questions, submit answers, view a score, and exit or try again.
 
-The Online Quiz System is a software application designed to allow users to participate in online quizzes and view their results. Administrators can manage quiz questions by adding, editing, deleting, and viewing them.
+## Run the quiz
 
-The project aims to provide a simple, reliable, and user-friendly quiz experience while ensuring proper input validation, secure administrator access, accurate score calculation, and effective error handling.
+No installation, server, or build step is needed to use the demo:
 
-## Project Objectives
+1. Download or clone this repository, keeping its folders together.
+2. Open the repository folder in File Explorer.
+3. Double-click `index.html` to open it in a web browser.
+4. Select **Start quiz**, answer the questions, and submit to view the result.
 
-- Allow users to start and participate in quizzes.
-- Display questions and enable users to select and navigate answers.
-- Submit quizzes and calculate scores accurately.
-- Display quiz results and allow users to exit quizzes.
-- Provide administrator login and question management functionality.
-- Validate inputs and handle errors appropriately.
-- Test the system for correctness, usability, security, and performance.
+`index.html` loads the JavaScript modules using relative paths. Keep the `js` and `sprint1` folders in their current locations beside `index.html`; moving or opening the HTML by itself will prevent those modules from loading.
 
-## Team Information
+## Project structure
 
-- **Team:** Team 13
+```text
+Online-Quiz-System-Team13/
+├── index.html                    # Browser UI and integration for the Sprint 1 quiz
+├── js/
+│   ├── quiz.js                   # Submission, score calculation, and result display
+│   └── quiz.test.js              # Tests for submission, scoring, and result display
+├── sprint1/
+│   ├── FR-01-start-quiz.js        # Initializes a quiz session
+│   ├── FR-02-display-questions.js # Renders the current question and options
+│   ├── FR-03-select-answer.js     # Stores a participant's answer
+│   ├── FR-04-navigate-questions.js # Navigation state and question controls
+│   ├── FR-08-exit-quiz.js         # Exit confirmation control
+│   ├── FR-01-FR-02.test.js        # Start-quiz and question-display tests
+│   └── FR-03-FR-04.test.js        # Answer-selection and navigation tests
+├── .github/workflows/             # GitHub Actions workflow definitions
+├── ONLINE QUIZ SYSTEM-TEAM13(Phase 1) (1).pdf
+│                                 # Phase 1 requirements document
+└── Sprint1_demo_video.mp4         # Sprint 1 demonstration recording
+```
+
+The page does not combine the module source files into one file. It loads and connects them in the browser; `index.html` contains the quiz questions and user interface.
+
+## Run tests
+
+The browser demo can be opened without Node.js. Node.js is needed only to run the automated tests. From a terminal opened in the repository folder, run:
+
+```powershell
+node js/quiz.test.js
+node --test sprint1/FR-01-FR-02.test.js sprint1/FR-03-FR-04.test.js
+```
+
+## Sprint plan
+
+- **Sprint 1 (19–23 October 2026):** Build and test the participant quiz flow.
+- **Sprint 2 (26–30 October 2026):** Planned administrator functionality and further validation.
+
+The repository currently contains the Sprint 1 participant quiz demo and tests. Administrator login and question-management features are not included in the current runnable demo.
+
+## Requirements and project workflow
+
+The Phase 1 PDF documents functional requirements FR-01 to FR-13 and validation and verification requirements VFR-01 to VFR-12. GitHub Issues, Pull Requests, project boards, and the workflow files under `.github/workflows/` support project tracking and automated checks.
+
+## Team
+
+- **Team:** 13
 - **Project:** Online Quiz System
 - **Course:** Software Engineering
-
-## Project Requirements
-
-The requirements are documented in the Phase 1 requirements document.
-
-- **Functional Requirements (FR-01 to FR-13):** Define the main features of the Online Quiz System.
-- **Validation and Verification Requirements (VFR-01 to VFR-12):** Define the checks needed to verify functionality, input validation, security, usability, error handling, and performance.
-
-## Project Management
-
-The project will be managed using GitHub and GitHub Projects.
-
-The team will use:
-- **Product Backlog:** To organise and track project tasks.
-- **Story Points:** To estimate task complexity.
-- **Sprint Planning:** To divide work into two development sprints.
-- **GitHub Issues and Pull Requests:** To track tasks, review code, and manage changes.
-- **GitHub Actions:** To automate suitable checks and tests.
-
-## Sprint Plan
-
-### Sprint 1: 19–23 October 2026
-**Goal:** Develop a basic working quiz.
-
-Planned work includes starting a quiz, displaying questions, selecting and navigating answers, submitting quizzes, calculating scores, displaying results, and testing the basic quiz flow.
-
-### Sprint 2: 26–30 October 2026
-**Goal:** Complete administrator functionality and quality checks.
-
-Planned work includes administrator login, adding, editing, deleting and viewing questions, input validation, security checks, testing, and documentation.
-
-*These are the planned sprint goals; completed work will be updated as development progresses.*
-
-
-*The folder names above are a suggested organisation. Add each folder and its files as the corresponding deliverables become available. Keep the existing Phase 1 PDF and update its filename in this README if necessary.*
-
-## Current Status
-
-**Phase 1:** Requirements documentation prepared.
-
-**Phase 2:** Project board creation, backlog preparation, story-point estimation, team assignment, and sprint planning.
-
-Implementation, testing, deployment, and demonstration materials will be updated as the project progresses.
-
-

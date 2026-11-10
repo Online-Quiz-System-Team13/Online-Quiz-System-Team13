@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz System - Administrator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #222; }
+        h1 { font-size: 24px; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+        button { margin-top: 12px; padding: 8px 16px; cursor: pointer; }
+        .message { margin-top: 12px; padding: 10px; border-radius: 4px; }
+        .error { background: #fde8e8; color: #9b1c1c; }
+        .success { background: #e6f4ea; color: #1e6b34; }
+        .hidden { display: none; }
+        .question { border: 1px solid #ccc; border-radius: 6px; padding: 12px; margin-top: 12px; }
+        .question button { margin-right: 8px; }
+        .hint { color: #666; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <h1>Online Quiz System - Administrator</h1>
+
+    <!-- FR-09: Admin login interface -->
+    <section id="login-section">
+        <h2>Administrator Login</h2>
+        <form id="login-form">
+            <label for="username">Username</label>
+            <input id="username" type="text" autocomplete="username">
+            <label for="password">Password</label>
+            <input id="password" type="password" autocomplete="current-password">
+            <button type="submit">Log in</button>
+        </form>
+    </section>
+
+    <!-- Protected area: shown only after login -->
+    <section id="admin-section" class="hidden">
+        <h2>Manage Questions</h2>
+        <button id="logout-button">Log out</button>
+        <div id="question-list"></div>
+
+        <!-- FR-11: Edit form -->
+        <form id="edit-form" class="hidden">
+            <h3>Edit Question <span id="edit-id"></span></h3>
+            <label for="edit-text">Question text</label>
+            <input id="edit-text" type="text">
+            <label for="edit-options">Options (separate with commas)</label>
+            <input id="edit-options" type="text">
+            <label for="edit-correct">Correct answer (must match one option exactly)</label>
+            <input id="edit-correct" type="text">
+            <button type="submit">Save changes</button>
+            <button type="button" id="cancel-edit">Cancel</button>
+        </form>
+    </section>
+
+    <div id="message" class="message hidden" role="alert"></div>
+
+    <script src="admin-messages.js"></script>
+    <script src="FR-09-admin-login.js"></script>
+    <script src="FR-11-edit-question.js"></script>
+    <script src="FR-12-delete-question.js"></script>
+    <script>
+        // Sample data in the shared format { id, text, options, correctAnswer }.
+        // Replace with the team's shared question data source once it is merged.
+        const questions = [
+            { id: 1, text: "What is 2 + 2?", options: ["3", "4", "5"], correctAnswer: "4" },
+            { id: 2, text: "Which language runs in a web browser?", options: ["JavaScript", "C", "Python"], correctAnswer: "JavaScript" },
+            { id: 3, text: "What does HTML stand for?", options: ["HyperText Markup Language", "High Text Machine Language"], correctAnswer: "HyperText Markup Language" }
+        ];
+
+        let token = null;
+        let editingId = null;
+
+        const el = function (id) { return document.getElementById(id); };
+
+        function showMessage(text, type) {
+            const box = el("message");
+            box.textContent = text;
+            box.className = "message " + type;
+        }
+
+        function showAdminArea(loggedIn) {
+            el("login-section").classList.toggle("hidden", loggedIn);
+            el("admin-section").classList.toggle("hidden", !loggedIn);
+            el("edit-form").classList.add("hidden");
+        }
+
+        function renderQuestions() {
+            const list = el("question-list");
+            list.replaceChildren();
+            if (questions.length === 0) {
+                const empty = document.createElement("p");
+                empty.textContent = "No questions have been added.";
+                list.appendChild(empty);
+                return;
+            }
+            questions.forEach(function (q) {
+                const box = document.createElement("div");
+                box.className = "question";
+                const title = document.createElement("strong");
+                title.textContent = q.id + ". " + q.text;
+                const opts = document.createElement("p");
+                opts.textContent = "Options: " + q.options.join(", ") + "  |  Correct: " + q.correctAnswer;
+                const editBtn = document.createElement("button");
+                editBtn.textContent = "Edit";
+                editBtn.addEventListener("click", function () { startEdit(q.id); });
+                const delBtn = document.createElement("button");
+                delBtn.textContent = "Delete";
+                delBtn.addEventListener("click", function () { removeQuestion(q.id); });
+                box.append(title, opts, editBtn, delBtn);
+                list.appendChild(box);
+            });
+        }
+
+        // Runs a protected action and shows the right message on error.
+        function guarded(action) {
+            try {
+                action();
+            } catch (error) {
+                showMessage(AdminMessages.toUserMessage(error), "error");
+                if (error.code === "NOT_AUTHENTICATED" || error.code === "SESSION_EXPIRED") {
+                    token = null;
+                    showAdminArea(false);
+                }
+            }
+        }
+
+        function startEdit(id) {
+            guarded(function () {
+                AdminAuth.requireAdmin(token);
+                const q = questions[AdminEditQuestion.findQuestionIndex(questions, id)];
+                editingId = q.id;
+                el("edit-id").textContent = "#" + q.id;
+                el("edit-text").value = q.text;
+                el("edit-options").value = q.options.join(", ");
+                el("edit-correct").value = q.correctAnswer;
+                el("edit-form").classList.remove("hidden");
+            });
+        }
+
+        function removeQuestion(id) {
+            if (!confirm("Delete this question?")) { return; }
+            guarded(function () {
+                const result = AdminDeleteQuestion.deleteQuestion(questions, token, id);
+                showMessage(result.message, "success");
+                el("edit-form").classList.add("hidden");
+                renderQuestions();
+            });
+        }
+
+        el("login-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const result = await AdminAuth.login(el("username").value, el("password").value);
+            el("password").value = "";
+            if (!result.success) {
+                showMessage(result.message, "error");
+                return;
+            }
+            token = result.token;
+            showMessage(result.message, "success");
+            showAdminArea(true);
+            renderQuestions();
+        });
+
+        el("logout-button").addEventListener("click", function () {
+            showMessage(AdminAuth.logout().message, "success");
+            token = null;
+            showAdminArea(false);
+        });
+
+        el("edit-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            guarded(function () {
+                const options = el("edit-options").value.split(",").map(function (o) { return o.trim(); });
+                const result = AdminEditQuestion.editQuestion(questions, token, editingId, {
+                    text: el("edit-text").value,
+                    options: options,
+                    correctAnswer: el("edit-correct").value
+                });
+                showMessage(result.message, "success");
+                el("edit-form").classList.add("hidden");
+                renderQuestions();
+            });
+        });
+
+        el("cancel-edit").addEventListener("click", function () {
+            el("edit-form").classList.add("hidden");
+        });
+    </script>
+</body>
+</html>
