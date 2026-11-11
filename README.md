@@ -62,6 +62,13 @@ node js/quiz.test.js
 node --test js/question-bank.test.js sprint1/FR-01-FR-02.test.js sprint1/FR-03-FR-04.test.js sprint2/FR-13-view-questions.test.js sprint2/TEST-02-admin-login-access.test.js sprint2/TEST-03-question-validation.test.js sprint2/TEST-05-errors-messages.test.js sprint2/TEST-06-usability.test.js sprint2/TEST-07-performance.test.js
 ```
 
+The latest Sprint 1 and Sprint 2 testing reports are in [`docs/`](./docs/):
+
+- [Unit Test Report](./docs/UNIT-TEST-REPORT.md)
+- [System Validation Report](./docs/SYSTEM-VALIDATION-REPORT.md)
+- [Code Coverage Report](./docs/CODE-COVERAGE-REPORT.md)
+- [Branch Coverage Report](./docs/BRANCH-COVERAGE-REPORT.md)
+
 ## Sprint plan
 
 - **Sprint 1 (19–23 October 2026):** Build and test the participant quiz flow.
